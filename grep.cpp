@@ -60,25 +60,20 @@ std::vector<std::pair<std::string, int>> sort_func(std::map<std::string, int>& M
             text_f_name = text_file_name; 
         }
 
-
         void Grep::grep_func(std::vector<size_t> &results)
         {
-            
-    
-    //std::vector<std::pair<std::string, int>>::iterator sortitr; 
-      //  std::vector<int> res; 
 
-      std::ofstream txt_file; 
-      std::ofstream log_file;
+            std::ofstream txt_file; 
+            std::ofstream log_file;
 
-      txt_file.open(text_f_name);
-      log_file.open(log_f_name); 
+            txt_file.open(text_f_name);
+            log_file.open(log_f_name); 
 
-    fs::path p = directory_value; 
+            fs::path p = directory_value; 
 
     
-    for (const auto  & entry : fs::recursive_directory_iterator(p))
-        {   
+            for (const auto  & entry : fs::recursive_directory_iterator(p))
+            {   
             
             std::ifstream infile(entry.path()); 
             std::string curpath = entry.path(); 
@@ -88,65 +83,64 @@ std::vector<std::pair<std::string, int>> sort_func(std::map<std::string, int>& M
              uint64_t id_variable = std::stoull(ss.str());  
 
              mapthr2str.insert(std::make_pair(id_variable, entry.path())); 
-
-             thread_ids.insert(id_variable); 
              
-            //int path_counter = 0; 
-             while(getline(infile, line))
-             {  
+                while(getline(infile, line))
+                {  
                 /*
                 ss << std::this_thread::get_id(); 
                 uint64_t id_variable = std::stoull(ss.str());  
                 */
                 ++line_no; 
+
                 auto pos = line.find(searched_word); 
-                log_file << std::this_thread::get_id() << ": " << entry.path() << std::endl; 
+
+                //log_file << std::this_thread::get_id() << ": " << entry.path() << std::endl; 
+                maplog.insert(std::pair<std::string, uint64_t>(curpath, id_variable)); 
                 
                 if (pos != std::string::npos)        
                     {                           
-                        //word_count++; 
                         files_w_pattern++; 
                         txt_file << entry.path(); 
                         txt_file << ":" << line_no << ":" << line << std::endl; 
                         
                           m[curpath]++; 
-                          
+ 
                     }   
-             }
+                }
             searched_files++; 
-            
-       
+  
 
-
-        }
-
-
-        /*
-        
-        
-         for(std::multimap<uint64_t, std::string>::iterator it = mapthr2str.begin(); it != mapthr2str.end(); it++)
-            {
-
-                //std::cout << (*it).first << " " << (*it).second << '\n'; 
-                log_file << (*it).first << ": " << '\n'; 
             }
-        
-        */ 
 
-
-       /*
-
-            for (auto itr = mapthr2str.begin(); itr != mapthr2str.end(); itr++)
-                log_file << itr->first << '\t' << itr->second << '\n';
-
-         */ 
 
       sorted = sort_func(m); 
 
+        for(auto itr = maplog.begin(); itr != maplog.end(); itr++)
+            {
+                log_file << itr->second << ": " << itr->first << std::endl; 
+            }
 
-    
         /*
 
+        for(size_t i = 0; i < vpair.size() / 4; i++)
+            {
+                for(size_t j = i + 1; j < vpair.size(); j++)
+                    {    
+                        if (vpair[i].first == vpair[j].first)
+                            {
+                                log_file << ": " << vpair[i].second << ", " << vpair[j].second << std::endl;
+                                
+                            }
+                    }
+            }
+        */ 
+       
+
+
+
+
+        /*
+            // DIRECTORIES ARE SORTED BY THEIR PATTERN NUMBERS 
         for(auto sortitr = sorted.begin(); sortitr != sorted.end(); sortitr++)
             {
                 std::cout << sortitr->first << " " << sortitr->second << std::endl; 
@@ -157,7 +151,7 @@ std::vector<std::pair<std::string, int>> sort_func(std::map<std::string, int>& M
         */ 
 
 
-       /*
+       /*   
         
 
         for(std::multimap<uint64_t, std::string>::iterator it = mapthr2str.begin(); it != mapthr2str.end(); ++it)
@@ -178,28 +172,19 @@ std::vector<std::pair<std::string, int>> sort_func(std::map<std::string, int>& M
         }
     
         */          
-        
-       
-
-
 
         txt_file.close(); 
         log_file.close(); 
-        
+
         
          for(auto itr = m.begin(); itr != m.end(); ++itr)
             {
                 patterns_number += itr->second; 
             }
          
-            //std::cout << patterns_number << std::endl; 
-            
 
         files_w_pattern = m.size();
 
-        //std::cout << files_w_pattern << std::endl; 
-    
-    
     results.push_back(searched_files); 
     results.push_back(files_w_pattern); 
     results.push_back(patterns_number); 
@@ -214,10 +199,6 @@ void Grep::helper()
                                         " [r][result file] [-t][threads]\n"; 
 }
 
-fs::path Grep::get_directory()
-{
-    return directory_value; 
-}
 
 std::string Grep::get_log_file_name()
 {

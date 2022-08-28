@@ -23,7 +23,6 @@ class Grep
 
         }
         void set_directory(fs::path path);
-        fs::path get_directory();
         void set_log_file_name(std::string log_file_name);
         void set_txt_file_name(std::string text_file_name);
         std::string get_log_file_name();
@@ -48,9 +47,9 @@ class Grep
         std::map<std::string, int> m;
         std::vector<std::pair<std::string, int>> sorted; 
         std::multimap<uint64_t, std::string> mapthr2str; 
-        std::set<uint64_t> thread_ids; 
+        std::map<std::string, uint64_t> maplog; 
 
-         size_t line_no = 0; 
+        size_t line_no = 0; 
         size_t word_count = 0; 
         std::string line;   
 };

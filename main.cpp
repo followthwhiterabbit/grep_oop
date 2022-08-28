@@ -39,14 +39,12 @@ std::vector<size_t> results; // getting the results by reference rather than get
 
 
     if(argc > 1)
-        {
+    {
             sword = argv[1];
-        }        
+    }        
 
-        Grep grep_obj(sword); 
+    Grep grep_obj(sword); 
 
-    
-  
     if(argc % 2 == 1)
     {   
         grep_obj.helper(); 
@@ -58,7 +56,7 @@ std::vector<size_t> results; // getting the results by reference rather than get
     {    
         grep_obj.set_directory(cwd); 
 
-        for(int i = 0; i < num_of_threads; i++)
+        for(size_t i = 0; i < num_of_threads; i++)
             {
                 threads.emplace_back(&Grep::grep_func, grep_obj, std::ref(results)); 
                 std::this_thread::sleep_for(nanoseconds(1000));
@@ -350,7 +348,8 @@ std::vector<size_t> results; // getting the results by reference rather than get
     
     for(auto & thread : threads)
         {
-            thread.join(); 
+            if(thread.joinable())
+                thread.join(); 
         }
     
   
