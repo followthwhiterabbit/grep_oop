@@ -1,0 +1,1 @@
+/usr/bin/c++  -pthread   CMakeFiles/grepex.dir/main.cpp.o CMakeFiles/grepex.dir/grep.cpp.o  -o grepex 

@@ -1,0 +1,3 @@
+/home/zornic/projects/grep_oop/build/CMakeFiles/rebuild_cache.dir
+/home/zornic/projects/grep_oop/build/CMakeFiles/edit_cache.dir
+/home/zornic/projects/grep_oop/build/CMakeFiles/grepex.dir
