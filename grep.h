@@ -14,14 +14,8 @@ class Grep
 {
     public:
         Grep(std::string word)
-            : searched_word(word)
-        {
-
-        } 
-        ~Grep()
-        {
-
-        }
+            : searched_word(word){} 
+        ~Grep(){}
         void set_directory(fs::path path);
         void set_log_file_name(std::string log_file_name);
         void set_txt_file_name(std::string text_file_name);
