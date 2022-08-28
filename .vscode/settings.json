@@ -56,6 +56,7 @@
         "typeinfo": "cpp",
         "map": "cpp",
         "stop_token": "cpp",
-        "thread": "cpp"
+        "thread": "cpp",
+        "set": "cpp"
     }
 }

@@ -3,17 +3,20 @@
 #include <thread>
 #include <vector>
 #include <chrono>    
+#include <sys/types.h>
+#include <sys/stat.h>
 
 
 using namespace std::chrono;
 
+struct stat info;
 
 
 int main(int argc, char* argv[])
 {
 
 auto start = high_resolution_clock::now();
-Grep grep_obj; 
+
 std::vector<size_t> results; // getting the results by reference rather than getter inside the object, 
 
 
@@ -34,108 +37,95 @@ std::vector<size_t> results; // getting the results by reference rather than get
     
     fs::path cwd = fs::current_path();
 
+
+    if(argc > 1)
+        {
+            sword = argv[1];
+        }        
+
+        Grep grep_obj(sword); 
+
+    
   
-    if(argc % 2 == 1) // if ./grepex executed once, the following instructions will be prompted 
+    if(argc % 2 == 1)
     {   
         grep_obj.helper(); 
         return 1; 
     }
 
 
-    if(argc > 1)
-        {
-            sword = argv[1];
-            grep_obj.set_word(sword); 
-        }
-   
-
     if (argc == 2)
     {    
-        //grep_obj.set_word(argv[1]); 
         grep_obj.set_directory(cwd); 
 
         for(int i = 0; i < num_of_threads; i++)
             {
                 threads.emplace_back(&Grep::grep_func, grep_obj, std::ref(results)); 
+                std::this_thread::sleep_for(nanoseconds(1000));
 
             }
 
-        for(auto & thread : threads)
-            { 
-        thread.join(); 
-            }
     }
     else if (argc == 4)
     {   
-        // ctpl::thread_pool p(num_of_threads); 
-        
-         
+    
         flag1 = argv[2]; 
 
         if(flag1 == d_flag)
         {
-            //sword = argv[1];
-            //grep_obj.set_word(sword);
+            if(stat(argv[3], &info) != 0)
+                {
+                    std::cout << "The path doesn't exist." << std::endl; 
+                    grep_obj.helper();
+                    return 1; 
+                }
+
             grep_obj.set_directory(argv[3]);
             
 
             for( size_t i = 0; i < num_of_threads; i++)
                 {                                       
                    threads.emplace_back(&Grep::grep_func, grep_obj, std::ref(results));
+                   std::this_thread::sleep_for(nanoseconds(1000));
                 }
 
-                for(auto & thread : threads)
-                    {
-                        thread.join(); 
-                    }      
         }
         else if(flag1 == l_flag)
             {
-                //grep_obj.set_word(sword);
                 grep_obj.set_directory(cwd.string());                 
                 grep_obj.set_log_file_name(argv[3]);
                for( size_t i = 0; i < num_of_threads; i++)
                 {                                       
                      threads.emplace_back(&Grep::grep_func, grep_obj, std::ref(results));
+                     std::this_thread::sleep_for(nanoseconds(1000));
                 }
 
-                for(auto & thread : threads)
-                    {
-                        thread.join(); 
-                    }
 
             }
         else if(flag1 == r_flag)
             {
-                //grep_obj.set_word(sword); 
                 grep_obj.set_directory(cwd);
                 grep_obj.set_txt_file_name(argv[3]); 
 
                 for( size_t i = 0; i < num_of_threads; i++)
                 {                                       
                      threads.emplace_back(&Grep::grep_func, grep_obj, std::ref(results));
+                     std::this_thread::sleep_for(nanoseconds(1000));
                 }
+                
 
-                for(auto & thread : threads)
-                    {
-                        thread.join(); 
-                    }
 
             }
-        else if(flag1 == t_flag) // I DON'T KNOW THIS YET 
+        else if(flag1 == t_flag) 
             {
-                //grep_obj.set_word(sword); 
                 grep_obj.set_directory(cwd); 
                 num_of_threads = atoi(argv[3]); 
                 for( size_t i = 0; i < num_of_threads; i++) // cwd.string() is an r-value already,
                     {                                       // but we need to send the others as std::ref 
                         threads.emplace_back(&Grep::grep_func, grep_obj, std::ref(results));
+                        std::this_thread::sleep_for(nanoseconds(1000));
                     }
-
-                for(auto & thread : threads)
-                    {
-                        thread.join(); 
-                    }
+                    
     
             }
         else
@@ -151,7 +141,14 @@ std::vector<size_t> results; // getting the results by reference rather than get
         flag2 = argv[4]; 
         if(flag1 == d_flag && flag2 == l_flag)
         {   
-            //grep_obj.set_word(sword);
+             if(stat(argv[3], &info) != 0)
+                {
+                    std::cout << "The path doesn't exist." << std::endl; 
+                    grep_obj.helper();
+                    return 1; 
+                }
+
+
             grep_obj.set_directory(argv[3]);
             grep_obj.set_log_file_name(argv[5]);
 
@@ -159,18 +156,14 @@ std::vector<size_t> results; // getting the results by reference rather than get
             for( size_t i = 0; i < num_of_threads; i++)
                 {                                       
                     threads.emplace_back(&Grep::grep_func, grep_obj, std::ref(results));
+                    std::this_thread::sleep_for(nanoseconds(1000));
                 }
-
-                for(auto & thread : threads)
-                    {
-                        thread.join(); 
-                    }
             
 
         }
         else if(flag1 == l_flag && flag2 == r_flag)
         {
-            //grep_obj.set_word(sword);
+
             grep_obj.set_directory(cwd);
             grep_obj.set_log_file_name(argv[3]);
             grep_obj.set_txt_file_name(argv[5]);
@@ -178,48 +171,63 @@ std::vector<size_t> results; // getting the results by reference rather than get
             for( size_t i = 0; i < num_of_threads; i++)
                 {                                       
                    threads.emplace_back(&Grep::grep_func, grep_obj, std::ref(results));
+                   std::this_thread::sleep_for(nanoseconds(1000));
                 }
-
-                for(auto & thread : threads)
-                    {
-                        thread.join(); 
-                    }
 
         }
         else if(flag1 == r_flag && flag2 == t_flag)
         {  
-            grep_obj.set_word(sword);
             grep_obj.set_directory(cwd);
             grep_obj.set_txt_file_name(argv[3]);
             num_of_threads = atoi(argv[5]); 
 
             for( size_t i = 0; i < num_of_threads; i++)
                 {                                       
-                   threads.emplace_back(&Grep::grep_func, grep_obj, std::ref(results)); 
+                   threads.emplace_back(&Grep::grep_func, grep_obj, std::ref(results));
+                   std::this_thread::sleep_for(nanoseconds(1000)); 
                 }
 
-                for(auto & thread : threads)
-                    {
-                        thread.join(); 
-                    }
         }
         else if(flag1 == d_flag && flag2 == r_flag)
         {     
-                //grep_obj.set_word(sword);
+             if(stat(argv[3], &info) != 0)
+                {
+                    std::cout << "The path doesn't exists." << std::endl; 
+                    grep_obj.helper();
+                    return 1; 
+                }
+
+
                 grep_obj.set_directory(argv[3]);
                 grep_obj.set_txt_file_name(argv[5]);
 
             for( size_t i = 0; i < num_of_threads; i++)
                 {                                       
-                    threads.emplace_back(&Grep::grep_func, grep_obj, std::ref(results)); 
+                    threads.emplace_back(&Grep::grep_func, grep_obj, std::ref(results));
+                    std::this_thread::sleep_for(nanoseconds(1000)); 
+                }
+        }
+        else if(flag1 == d_flag && flag2 == t_flag)
+        {     
+             if(stat(argv[3], &info) != 0)
+                {
+                    std::cout << "The path doesn't exists." << std::endl; 
+                    grep_obj.helper();
+                    return 1; 
                 }
 
-                for(auto & thread : threads)
-                    {
-                        thread.join(); 
-                    }
 
-            }
+                grep_obj.set_directory(argv[3]);
+                num_of_threads = atoi(argv[5]);
+
+
+            for( size_t i = 0; i < num_of_threads; i++)
+                {                                       
+                    threads.emplace_back(&Grep::grep_func, grep_obj, std::ref(results));
+                    std::this_thread::sleep_for(nanoseconds(1000)); 
+                }
+        }
+
         
     }
     else if(argc == 8)
@@ -230,7 +238,14 @@ std::vector<size_t> results; // getting the results by reference rather than get
         
         if(flag1 == d_flag && flag2 == l_flag && flag3 == r_flag)
         {
-                //grep_obj.set_word(sword);
+                 if(stat(argv[3], &info) != 0)
+                {
+                    std::cout << "The path doesn't exist." << std::endl; 
+                    grep_obj.helper();
+                    return 1; 
+                }
+
+
                 grep_obj.set_directory(argv[3]);
                 grep_obj.set_log_file_name(argv[5]);
                 grep_obj.set_txt_file_name(argv[7]); 
@@ -238,17 +253,14 @@ std::vector<size_t> results; // getting the results by reference rather than get
             for( size_t i = 0; i < num_of_threads; i++)
                 {                                       
                    threads.emplace_back(&Grep::grep_func, grep_obj, std::ref(results)); 
+                   std::this_thread::sleep_for(nanoseconds(1000));
                 }
 
-                for(auto & thread : threads)
-                    {
-                        thread.join(); 
-                    }
 
         }
         else if(flag1 == l_flag && flag2 == r_flag && flag3 == t_flag)
         {
-                //grep_obj.set_word(sword);
+
                 grep_obj.set_directory(cwd);
                 grep_obj.set_log_file_name(argv[3]);
                 grep_obj.set_txt_file_name(argv[5]); 
@@ -257,18 +269,21 @@ std::vector<size_t> results; // getting the results by reference rather than get
 
             for( size_t i = 0; i < num_of_threads; i++)
                 {                                       
-                   threads.emplace_back(&Grep::grep_func, grep_obj, std::ref(results));  
+                   threads.emplace_back(&Grep::grep_func, grep_obj, std::ref(results)); 
+                   std::this_thread::sleep_for(nanoseconds(1000)); 
                 }
-
-                for(auto & thread : threads)
-                    {
-                        thread.join(); 
-                    }
             
         }
         else if(flag1 == d_flag && flag2 == r_flag && flag3 == t_flag)     
         {
-                //grep_obj.set_word(sword);
+                 if(stat(argv[3], &info) != 0)
+                {
+                    std::cout << "The path doesn't exist." << std::endl; 
+                    grep_obj.helper();
+                    return 1; 
+                }
+
+
                 grep_obj.set_directory(argv[3]);
                 grep_obj.set_txt_file_name(argv[5]); 
                 grep_obj.set_log_file_name(argv[7]);
@@ -279,12 +294,9 @@ std::vector<size_t> results; // getting the results by reference rather than get
             for( size_t i = 0; i < num_of_threads; i++)
                 {                                       
                     threads.emplace_back(&Grep::grep_func, grep_obj, std::ref(results)); 
+                    std::this_thread::sleep_for(nanoseconds(1000));
                 }
 
-                for(auto & thread : threads)
-                    {
-                        thread.join(); 
-                    }
         }
         else
         { 
@@ -302,8 +314,14 @@ std::vector<size_t> results; // getting the results by reference rather than get
         
         if(flag1 == d_flag && flag2 == l_flag && flag3 == r_flag && flag4 == t_flag)
         {       
+             if(stat(argv[3], &info) != 0)
+                {
+                    std::cout << "The path doesn't exist." << std::endl; 
+                    grep_obj.helper();
+                    return 1; 
+                }
 
-                //grep_obj.set_word(sword);
+
                 grep_obj.set_directory(argv[3]); 
                 grep_obj.set_log_file_name(argv[5]);
                 grep_obj.set_txt_file_name(argv[7]);
@@ -313,12 +331,9 @@ std::vector<size_t> results; // getting the results by reference rather than get
             for( size_t i = 0; i < num_of_threads; i++)
                 {                                       
                     threads.emplace_back(&Grep::grep_func, grep_obj, std::ref(results));
+                    std::this_thread::sleep_for(nanoseconds(1000));
                 }
 
-                for(auto & thread : threads)
-                    {
-                        thread.join(); 
-                    }
         }
         else 
         {
@@ -332,12 +347,22 @@ std::vector<size_t> results; // getting the results by reference rather than get
         return 1; 
     }
 
+    
+    for(auto & thread : threads)
+        {
+            thread.join(); 
+        }
+    
+  
+
 auto stop = high_resolution_clock::now();
 auto duration = duration_cast<microseconds>(stop - start);
 
 std::cout << "Searched files: " << results.at(0) << std::endl; 
 std::cout << "Files with pattern: " << results.at(1) << std::endl; 
 std::cout << "Patterns_number: " << results.at(2) << std::endl; 
+std::cout << "Result file: " << grep_obj.get_txt_file_name() << std::endl;
+std::cout << "Log file: " << grep_obj.get_log_file_name() << std::endl; 
 std::cout << "Number of Threads: " << num_of_threads << std::endl; 
 std::cout << "Elapsed time: " << duration.count() << "[ms]" << std::endl;
 
