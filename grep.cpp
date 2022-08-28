@@ -120,6 +120,8 @@ std::vector<std::pair<std::string, int>> sort_func(std::map<std::string, int>& M
 
         }
 
+
+        /*
         
         
          for(std::multimap<uint64_t, std::string>::iterator it = mapthr2str.begin(); it != mapthr2str.end(); it++)
@@ -129,6 +131,7 @@ std::vector<std::pair<std::string, int>> sort_func(std::map<std::string, int>& M
                 log_file << (*it).first << ": " << '\n'; 
             }
         
+        */ 
 
 
        /*
@@ -153,6 +156,8 @@ std::vector<std::pair<std::string, int>> sort_func(std::map<std::string, int>& M
      
         */ 
 
+
+       /*
         
 
         for(std::multimap<uint64_t, std::string>::iterator it = mapthr2str.begin(); it != mapthr2str.end(); ++it)
@@ -162,14 +167,17 @@ std::vector<std::pair<std::string, int>> sort_func(std::map<std::string, int>& M
                 //log_file << (*it).first << ": " << (*it).second << '\n'; 
             }
         
+        */ 
 
+       /*
        
         for(auto it = thread_ids.begin(); it != thread_ids.end(); it++)
         {
             log_file << *it << ": " << std::endl; 
     
         }
-             
+    
+        */          
         
        
 
