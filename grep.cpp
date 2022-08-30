@@ -40,6 +40,13 @@ std::vector<std::pair<std::string, int>> sort_func(std::map<std::string, int>& M
 }
 
 
+int can_exec(const char* file)
+{
+    return !access(file, X_OK); 
+}
+
+
+
         void Grep::set_directory(fs::path path)
         {
             directory_value = path;  
@@ -79,6 +86,11 @@ std::vector<std::pair<std::string, int>> sort_func(std::map<std::string, int>& M
             std::string curpath = entry.path(); 
             std::stringstream ss; 
 
+            const char* check_if_exec = entry.path().c_str(); 
+            if(can_exec(check_if_exec))
+                continue; 
+             
+
              ss << std::this_thread::get_id(); 
              uint64_t id_variable = std::stoull(ss.str());  
 
@@ -94,7 +106,7 @@ std::vector<std::pair<std::string, int>> sort_func(std::map<std::string, int>& M
 
                 auto pos = line.find(searched_word); 
 
-                //log_file << std::this_thread::get_id() << ": " << entry.path() << std::endl; 
+                
                 maplog.insert(std::pair<std::string, uint64_t>(curpath, id_variable)); 
                 
                 if (pos != std::string::npos)        
@@ -102,6 +114,7 @@ std::vector<std::pair<std::string, int>> sort_func(std::map<std::string, int>& M
                         files_w_pattern++; 
                         txt_file << entry.path(); 
                         txt_file << ":" << line_no << ":" << line << std::endl; 
+                         log_file << std::this_thread::get_id() << ": " << entry.path() << std::endl;
                         
                           m[curpath]++; 
  
@@ -115,10 +128,15 @@ std::vector<std::pair<std::string, int>> sort_func(std::map<std::string, int>& M
 
       sorted = sort_func(m); 
 
+        /*
+
         for(auto itr = maplog.begin(); itr != maplog.end(); itr++)
             {
                 log_file << itr->second << ": " << itr->first << std::endl; 
             }
+        */ 
+       
+
 
         /*
 

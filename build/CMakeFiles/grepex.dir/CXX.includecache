@@ -62,19 +62,3 @@ map
 set
 -
 
-/home/zornic/projects/grep_oop/main.cpp
-grep.h
-/home/zornic/projects/grep_oop/grep.h
-iostream
--
-thread
--
-vector
--
-chrono
--
-sys/types.h
--
-sys/stat.h
--
-
