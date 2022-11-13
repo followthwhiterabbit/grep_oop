@@ -67,8 +67,6 @@ std::vector<size_t> results; // getting the results by reference rather than get
                std::for_each(threads.begin(), threads.end(), 
                               std::mem_fn(&std::thread::join)); 
 
-
-
     }
     else if (argc == 4)
     {   
