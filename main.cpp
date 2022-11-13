@@ -3,6 +3,8 @@
 #include <thread>
 #include <vector>
 #include <chrono>    
+#include <algorithm>
+#include <functional>
 #include <sys/types.h>
 #include <sys/stat.h>
 
@@ -61,8 +63,11 @@ std::vector<size_t> results; // getting the results by reference rather than get
             {
                 threads.emplace_back(&Grep::grep_func, grep_obj, std::ref(results)); 
                 std::this_thread::sleep_for(nanoseconds(1000));
-
             }
+               std::for_each(threads.begin(), threads.end(), 
+                              std::mem_fn(&std::thread::join)); 
+
+
 
     }
     else if (argc == 4)
@@ -87,6 +92,10 @@ std::vector<size_t> results; // getting the results by reference rather than get
                    threads.emplace_back(&Grep::grep_func, grep_obj, std::ref(results));
                    std::this_thread::sleep_for(nanoseconds(1000));
                 }
+
+                std::for_each(threads.begin(), threads.end(), 
+                              std::mem_fn(&std::thread::join)); 
+
 
         }
         else if(flag1 == l_flag)
@@ -225,6 +234,11 @@ std::vector<size_t> results; // getting the results by reference rather than get
                     threads.emplace_back(&Grep::grep_func, grep_obj, std::ref(results));
                     std::this_thread::sleep_for(nanoseconds(1000)); 
                 }
+
+                    std::for_each(threads.begin(), threads.end(), 
+                              std::mem_fn(&std::thread::join)); 
+
+
         }
 
         

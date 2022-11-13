@@ -1,6 +1,8 @@
 file(REMOVE_RECURSE
   "CMakeFiles/grepex.dir/grep.cpp.o"
+  "CMakeFiles/grepex.dir/grep.cpp.o.d"
   "CMakeFiles/grepex.dir/main.cpp.o"
+  "CMakeFiles/grepex.dir/main.cpp.o.d"
   "grepex"
   "grepex.pdb"
 )
